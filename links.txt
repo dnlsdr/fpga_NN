@@ -1,0 +1,5 @@
+A Step by Step Backpropagation Example:
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Object Detection Part-1: Introduction to object detection:
+https://medium.com/@kattarajesh2001/object-detection-part-1-introduction-to-object-detection-321f1fd56295
