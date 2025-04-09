@@ -1,0 +1,5 @@
+Matrix size: 256x256 (total 65536 elements)
+LUT time:      0.009000 sec
+Function time:   0.000000 sec
+Max abs. error:        0.024933
+Average abs. error:    0.004120
