@@ -56,4 +56,7 @@ ABij += A[i][2] * B[2][j];
 | **Sebesség**                 | Jobb áteresztőképesség                                  | Rövidebb végrehajtási idő, ha van elég erőforrás         |
 | **II (Initiation Interval)** | Jellemzően 1-2 ciklus                                   | Nincs II – minden iteráció fizikailag jelen              |
 | **Fordítói viselkedés**      | Kontrollált pipeline regiszterekkel                     | Ciklus szétbontása kódszinten                            |
-
+For instance, placing the same directive at the top of the function (outside all of the for loops)
+will result in all of the loops being completely unrolled, which would take roughly N ∗ M ∗ P
+multiply-add operators and would have an interval of 1 cycle. Placing it inside the row loop would
+result in roughly M ∗ P multiply-add operators and an interval of roughly N cycles.
