@@ -1,0 +1,59 @@
+void matrixmul(int A[N][M], int B[M][P], int AB[N][P]) {
+#pragma HLS ARRAY RESHAPE variable=A complete dim=2
+#pragma HLS ARRAY RESHAPE variable=B complete dim=1
+/∗ for each row and column of AB ∗/
+row: for(int i = 0; i < N; ++i) {
+col: for(int j = 0; j < P; ++j) {
+#pragma HLS PIPELINE II=1
+/∗ compute (AB)i,j ∗/
+int ABij = 0;
+product: for(int k = 0; k < M; ++k) {
+ABij += A[i][k] ∗ B[k][j];
+}
+AB[i][j] = ABij;
+}
+}
+}
+[138.oldal](https://raw.githubusercontent.com/KastnerRG/pp4fpgas/gh-pages/main.pdf)
+In this case, we’ve applied a pipeline directive to the col loop with a target initiation interval of 1.
+The result is that the innermost for loop is fully unrolled, and we expect the resulting circuit include
+roughly M multiply-add operators and to have an interval of roughly N ∗ P cycles.
+1. Pipelining
+A #pragma HLS PIPELINE direktíva azt mondja a fordítónak, hogy pipelinezze a megadott ciklust.
+Mit jelent ez?
+
+A pipelining azt jelenti, hogy az egymást követő iterációk párhuzamosan hajtódnak végre.
+
+    Ha az Initiation Interval (II) = 1, az azt jelenti, hogy minden egyes órajelciklusban elindulhat egy új iteráció.
+
+    Azaz, míg az egyik iteráció számítása még fut, a következő már elindul — mint egy futószalag a gyárban.
+
+Példa:
+Tegyük fel, hogy egy számítás 5 ciklusig tart. Pipelining nélkül: minden iteráció 5 ciklus → összesen 5 × n ciklus.
+Pipelininggel (II=1): az első 5 ciklus alatt betölt a pipeline, utána minden ciklusban kijön egy eredmény → sokkal gyorsabb.
+
+2. Loop Unrolling
+
+A belső ciklus (product) automatikusan unrolled (kibontásra kerül), mert a pipelining hatékonyságához szükséges a párhuzamosítás.
+Mit jelent az "unrolling"?
+
+A loop unrolling a ciklus "kibontása" — azaz a ciklus több iterációját egyszerre, külön egységként generálja le.
+// Eredeti ciklus:
+for (int k = 0; k < 3; ++k) {
+  ABij += A[i][k] * B[k][j];
+}
+//Unrolling után ez lesz:
+ABij += A[i][0] * B[0][j];
+ABij += A[i][1] * B[1][j];
+ABij += A[i][2] * B[2][j];
+
+| Jellemző                     | **Pipelining**                                          | **Loop Unrolling**                                       |
+| ---------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| **Cél**                      | Iterációk időbeli átfedése (növeli áteresztőképességet) | Iterációk térbeli párhuzamosítása (növeli teljesítményt) |
+| **Hatás**                    | Több iteráció fut egymás után, de egymást átfedve       | Több iteráció egyszerre, párhuzamos hardverrel           |
+| **Példa**                    | Futószalag, ahol minden lépés új elemet vesz fel        | Munkások egyszerre több feladatot végeznek               |
+| **Hardver használat**        | Hatékonyabb időkihasználás                              | Több erőforrás (pl. ALU) szükséges                       |
+| **Sebesség**                 | Jobb áteresztőképesség                                  | Rövidebb végrehajtási idő, ha van elég erőforrás         |
+| **II (Initiation Interval)** | Jellemzően 1-2 ciklus                                   | Nincs II – minden iteráció fizikailag jelen              |
+| **Fordítói viselkedés**      | Kontrollált pipeline regiszterekkel                     | Ciklus szétbontása kódszinten                            |
+
